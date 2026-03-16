@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Vivere Wellness Hospital</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --sidebar-width: 260px;
+            --admin-bg: #f4f7f1;
+            --card-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        body.admin-body {
+            background-color: var(--admin-bg);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .admin-sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--white);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            padding: 2rem 1.5rem;
+            border-right: 1px solid rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+        }
+
+        .admin-logo {
+            margin-bottom: 3rem;
+        }
+
+        .admin-logo img {
+            height: 45px;
+        }
+
+        .admin-nav {
+            flex-grow: 1;
+        }
+
+        .admin-nav ul {
+            list-style: none;
+        }
+
+        .admin-nav li {
+            margin-bottom: 0.5rem;
+        }
+
+        .admin-nav a {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.8rem 1rem;
+            border-radius: 10px;
+            color: var(--text-secondary);
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .admin-nav a:hover, .admin-nav a.active {
+            background-color: var(--light-green-bg);
+            color: var(--primary-green);
+        }
+
+        .admin-nav a .icon {
+            font-size: 1.2rem;
+        }
+
+        /* Main Content Styles */
+        .admin-main {
+            margin-left: var(--sidebar-width);
+            flex-grow: 1;
+            padding: 2rem 3rem;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .admin-header h1 {
+            font-size: 1.8rem;
+            color: var(--text-primary);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-info {
+            text-align: right;
+        }
+
+        .user-info .name {
+            display: block;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .user-info .role {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            background-color: var(--primary-green);
+            color: var(--white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        /* Dashboard Cards */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .admin-card {
+            background-color: var(--white);
+            padding: 1.5rem;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .stat-card .label {
+            display: block;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card .value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .stat-card .trend {
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+            display: block;
+        }
+
+        .trend.up { color: #10b981; }
+
+        /* Tables & Lists */
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        .section-box {
+            background-color: var(--white);
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            padding: 2rem;
+        }
+
+        .section-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .admin-table th {
+            text-align: left;
+            padding: 1rem;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .admin-table td {
+            padding: 1.2rem 1rem;
+            border-bottom: 1px solid rgba(0,0,0,0.03);
+            vertical-align: middle;
+        }
+
+        .action-btns {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+        }
+
+        .btn-delete {
+            background-color: #fee2e2;
+            color: #ef4444;
+        }
+
+        .btn-delete:hover {
+            background-color: #ef4444;
+            color: var(--white);
+        }
+
+        .btn-edit {
+            background-color: #f1f5f9;
+            color: var(--text-primary);
+        }
+
+        /* Connection Hub */
+        .conn-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+
+        .conn-card {
+            text-align: center;
+            padding: 2rem;
+            transition: var(--transition);
+        }
+
+        .conn-card:hover {
+            transform: translateY(-5px);
+            border: 1px solid var(--primary-green);
+        }
+
+        .conn-card .icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .conn-card h3 {
+            margin-bottom: 0.5rem;
+        }
+
+        @media (max-width: 1024px) {
+            .dashboard-grid { grid-template-columns: repeat(2, 1fr); }
+            .conn-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 768px) {
+            .admin-sidebar { width: 80px; padding: 2rem 0.5rem; }
+            .admin-sidebar .admin-logo, .admin-nav span, .user-info { display: none; }
+            .admin-main { margin-left: 80px; padding: 2rem 1.5rem; }
+            .admin-nav a { justify-content: center; padding: 1rem; }
+            .dashboard-grid { grid-template-columns: 1fr; }
+            .conn-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body class="admin-body">
+    <aside class="admin-sidebar">
+        <div class="admin-logo">
+            <img src="Vivere Logo.png" alt="Vivere Admin">
+        </div>
+        <nav class="admin-nav">
+            <ul>
+                <li><a href="#" class="active" data-section="dashboard"><span class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg></span> <span>Dashboard</span></a></li>
+                <li><a href="#" data-section="services-mgmt"><span class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></span> <span>Services</span></a></li>
+                <li><a href="#" data-section="testimonials-mgmt"><span class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2Z"/></svg></span> <span>Testimonials</span></a></li>
+                <li><a href="#" data-section="stats-mgmt"><span class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg></span> <span>Stats</span></a></li>
+                <li><a href="#" data-section="connections"><span class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></span> <span>Page Links</span></a></li>
+            </ul>
+        </nav>
+        <div class="sidebar-footer">
+            <a href="index.html" class="btn btn-outline" style="border-color: var(--text-secondary); color: var(--text-secondary); width: 100%; text-align: center;">Logout</a>
+        </div>
+    </aside>
+
+    <main class="admin-main">
+        <header class="admin-header">
+            <h1 id="section-title">Dashboard Overview</h1>
+            <div class="user-profile">
+                <div class="user-info">
+                    <span class="name">Admin User</span>
+                    <span class="role">Super Administrator</span>
+                </div>
+                <div class="avatar">A</div>
+            </div>
+        </header>
+
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="content-section active">
+            <div class="dashboard-grid">
+                <div class="admin-card stat-card">
+                    <span class="label">Total Visitors</span>
+                    <span class="value">12,405</span>
+                    <span class="trend up"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 4px;"><path d="m18 15-6-6-6 6"/></svg> 12% this month</span>
+                </div>
+                <div class="admin-card stat-card">
+                    <span class="label">New Inquiries</span>
+                    <span class="value">84</span>
+                    <span class="trend up"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 4px;"><path d="m18 15-6-6-6 6"/></svg> 8% this week</span>
+                </div>
+                <div class="admin-card stat-card">
+                    <span class="label">Active Services</span>
+                    <span class="value">12</span>
+                    <span class="trend">Live on site</span>
+                </div>
+                <div class="admin-card stat-card">
+                    <span class="label">Avg. Rating</span>
+                    <span class="value">4.9</span>
+                    <span class="trend">From 250+ clients</span>
+                </div>
+            </div>
+
+            <div class="section-box">
+                <div class="section-top">
+                    <h2>Recent Activities</h2>
+                </div>
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Activity</th>
+                            <th>Page</th>
+                            <th>Status</th>
+                            <th>Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Stats updated</td>
+                            <td>Home Page</td>
+                            <td><span class="badge" style="background: #dcfce7; color: #166534; padding: 2px 8px; border-radius: 4px;">Success</span></td>
+                            <td>2 hours ago</td>
+                        </tr>
+                        <tr>
+                            <td>New testimonial added</td>
+                            <td>About Page</td>
+                            <td><span class="badge" style="background: #dcfce7; color: #166534; padding: 2px 8px; border-radius: 4px;">Success</span></td>
+                            <td>5 hours ago</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Services Management -->
+        <section id="services-mgmt" class="content-section">
+            <div class="section-box">
+                <div class="section-top">
+                    <h2>Manage Services</h2>
+                    <button class="btn btn-primary btn-sm">+ Add New Service</button>
+                </div>
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Service Name</th>
+                            <th>Category</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Yoga Classes</td>
+                            <td>Wellness</td>
+                            <td>Active</td>
+                            <td>
+                                <div class="action-btns">
+                                    <button class="btn btn-edit btn-sm">Edit</button>
+                                    <button class="btn btn-delete btn-sm">Delete</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Mindfulness Programs</td>
+                            <td>Therapy</td>
+                            <td>Active</td>
+                            <td>
+                                <div class="action-btns">
+                                    <button class="btn btn-edit btn-sm">Edit</button>
+                                    <button class="btn btn-delete btn-sm">Delete</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Testimonials Management -->
+        <section id="testimonials-mgmt" class="content-section">
+            <div class="section-box">
+                <div class="section-top">
+                    <h2>Manage Testimonials</h2>
+                    <button class="btn btn-primary btn-sm">+ Add New Testimonial</button>
+                </div>
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Client Name</th>
+                            <th>Program</th>
+                            <th>Rating</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Sarah Johnson</td>
+                            <td>Chronic Pain</td>
+                            <td>5.0</td>
+                            <td>
+                                <div class="action-btns">
+                                    <button class="btn btn-edit btn-sm">Edit</button>
+                                    <button class="btn btn-delete btn-sm">Delete</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Stats Management -->
+        <section id="stats-mgmt" class="content-section">
+            <div class="section-box" style="max-width: 600px;">
+                <div class="section-top">
+                    <h2>Update Site Statistics</h2>
+                </div>
+                <form id="stats-form">
+                    <div style="margin-bottom: 1.5rem;">
+                        <label style="display:block; margin-bottom:0.5rem; font-weight:500;">Yoga Classes Count</label>
+                        <input type="text" value="5k+" style="width:100%; padding:0.8rem; border-radius:8px; border:1px solid #ddd;">
+                    </div>
+                    <div style="margin-bottom: 1.5rem;">
+                        <label style="display:block; margin-bottom:0.5rem; font-weight:500;">Clients Count</label>
+                        <input type="text" value="250+" style="width:100%; padding:0.8rem; border-radius:8px; border:1px solid #ddd;">
+                    </div>
+                    <div style="margin-bottom: 1.5rem;">
+                        <label style="display:block; margin-bottom:0.5rem; font-weight:500;">Programs Created</label>
+                        <input type="text" value="500+" style="width:100%; padding:0.8rem; border-radius:8px; border:1px solid #ddd;">
+                    </div>
+                    <button type="button" class="btn btn-primary">Save Changes</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Connections Hub -->
+        <section id="connections" class="content-section">
+            <div class="conn-grid">
+                <a href="index.html" class="admin-card conn-card">
+                    <span class="icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span>
+                    <h3>Home Page</h3>
+                    <p>Main landing page and overview</p>
+                </a>
+                <a href="about.html" class="admin-card conn-card">
+                    <span class="icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg></span>
+                    <h3>About Us</h3>
+                    <p>Our story, team and vision</p>
+                </a>
+                <a href="services.html" class="admin-card conn-card">
+                    <span class="icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></span>
+                    <h3>Our Services</h3>
+                    <p>Detailed therapeutic offerings</p>
+                </a>
+                <a href="contact.html" class="admin-card conn-card">
+                    <span class="icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span>
+                    <h3>Contact</h3>
+                    <p>Contact info and inquiry form</p>
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        document.querySelectorAll('.admin-nav a').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const sectionId = link.getAttribute('data-section');
+                
+                // Update active link
+                document.querySelectorAll('.admin-nav a').forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+
+                // Switch section
+                document.querySelectorAll('.content-section').forEach(section => section.classList.remove('active'));
+                document.getElementById(sectionId).classList.add('active');
+
+                // Update title
+                document.getElementById('section-title').textContent = link.querySelector('span:not(.icon)').textContent + " Overview";
+            });
+        });
+    </script>
+</body>
+</html>
